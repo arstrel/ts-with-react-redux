@@ -9,8 +9,23 @@ interface AppProps {
   deleteTodo: typeof deleteTodo;
 }
 
-class _App extends React.Component<AppProps> {
+interface AppState {
+  fetching: boolean;
+}
+
+class _App extends React.Component<AppProps, AppState> {
+  state = {
+    fetching: false,
+  };
+
+  componentDidUpdate(prevProps: AppProps): void {
+    if (!prevProps.todos.length && this.props.todos.length) {
+      this.setState({ fetching: false });
+    }
+  }
+
   onFetchClick = (): void => {
+    this.setState({ fetching: true });
     this.props.fetchTodos();
   };
 
@@ -35,7 +50,7 @@ class _App extends React.Component<AppProps> {
       <div>
         <p>Wow! Todos!</p>
         <button onClick={this.onFetchClick}>Fetch</button>
-        {this.renderList()}
+        {this.state.fetching ? <div>Loading.... </div> : this.renderList()}
       </div>
     );
   }
